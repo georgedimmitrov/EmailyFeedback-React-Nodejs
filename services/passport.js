@@ -10,10 +10,9 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findById(id)
-    .then(user => {
-      done(null, user);
-    });
+  User.findById(id).then(user => {
+    done(null, user);
+  });
 });
 
 passport.use(
@@ -28,12 +27,11 @@ passport.use(
       const existingUser = await User.findOne({ googleId: profile.id });
 
       if (existingUser) {
-        done(null, existingUser);
-      } else {
-        new User({ googleId: profile.id })
-          .save()
-          .then(user => done(null, user));
+        return done(null, existingUser);
       }
+
+      const user = await new User({ googleId: profile.id }).save();
+      done(null, user);
     }
   )
 );
